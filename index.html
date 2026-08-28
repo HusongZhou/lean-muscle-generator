@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>薄肌计划生成器 · Lean Muscle Plan</title>
+<style>
+:root{--bg:#f6f8f7;--card:#ffffff;--ink:#17211d;--sub:#5c6b64;--acc:#0f9d6e;--acc2:#0b7d58;--line:#e3e9e6;--warn:#b45309}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;line-height:1.6}
+.wrap{max-width:780px;margin:0 auto;padding:16px 16px 64px}
+.hero{background:linear-gradient(135deg,#0b7d58,#0f9d6e 55%,#17b07d);color:#fff;border-radius:16px;padding:26px 22px;margin-bottom:18px}
+.hero h1{margin:0 0 6px;font-size:24px}
+.hero p{margin:0;opacity:.92;font-size:14px}
+.hero .priv{margin-top:10px;font-size:12px;opacity:.85}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+.card h2{margin:0 0 12px;font-size:16px;display:flex;align-items:center;gap:8px}
+.card h2 .tag{background:#e6f6ef;color:var(--acc2);font-size:12px;padding:2px 8px;border-radius:999px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field.full{grid-column:1/-1}
+.field label{font-size:13px;color:var(--sub)}
+.field input,.field select{font-size:15px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{display:flex;align-items:center;gap:6px;font-size:13px;background:#f1f5f3;border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+.chips input{accent-color:var(--acc)}
+.btns{display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 18px}
+button{font-size:15px;border:none;border-radius:12px;padding:12px 18px;cursor:pointer;font-weight:600}
+.btn-main{background:var(--acc);color:#fff;flex:1;min-width:200px}
+.btn-main:hover{background:var(--acc2)}
+.btn-ghost{background:#eef2f0;color:var(--ink)}
+#result{display:none}
+.quick{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px}
+.quick .q{background:linear-gradient(160deg,#f2fbf7,#ffffff);border:1px solid var(--line);border-radius:12px;padding:12px}
+.quick .q b{display:block;font-size:18px;color:var(--acc2)}
+.quick .q span{font-size:12px;color:var(--sub)}
+#resMd{width:100%;min-height:420px;font-family:ui-monospace,Consolas,monospace;font-size:13px;border:1px solid var(--line);border-radius:10px;padding:12px;background:#fbfdfc}
+.note{font-size:12px;color:var(--sub);margin-top:8px}
+footer{font-size:12px;color:var(--sub);text-align:center;margin-top:26px}
+@media(max-width:560px){.grid{grid-template-columns:1fr}}
+@media print{body *{display:none}#result{display:block!important}#result *{display:revert}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>薄肌计划生成器</h1>
+    <p>填一份问卷（默认值可跳过），30 秒生成你的个性化薄肌减脂计划</p>
+    <div class="priv">🔒 全部计算在本机浏览器完成，你的身体数据不会上传到任何服务器</div>
+  </div>
+
+  <div class="card"><h2>A · 身体数据 <span class="tag">必填</span></h2><div class="grid">
+    <div class="field"><label>性别</label><select id="a1"><option>男</option><option>女</option></select></div>
+    <div class="field"><label>年龄</label><input id="a2" type="number" placeholder="如 25"></div>
+    <div class="field"><label>身高（cm）</label><input id="a3" type="number" placeholder="如 175"></div>
+    <div class="field"><label>体重</label><div style="display:flex;gap:6px"><input id="a4" type="number" placeholder="如 70" style="flex:1"><select id="a4u"><option>kg</option><option>lb</option></select></div></div>
+    <div class="field"><label>体脂率 %（不知道可留空）</label><input id="a5" type="number" placeholder="如 20"></div>
+    <div class="field"><label>腰围 cm（建议填，监测基线）</label><input id="a6" type="number" placeholder="如 82"></div>
+  </div></div>
+
+  <div class="card"><h2>B · 目标 <span class="tag">必填</span></h2><div class="grid">
+    <div class="field"><label>目标体脂率 %</label><input id="b1" type="number" value="15"></div>
+    <div class="field"><label>减脂/增肌优先级</label><select id="b2"><option>减脂为主保肌（薄肌默认）</option><option>纯减脂</option><option>重合成均衡</option><option>增肌为主</option></select></div>
+    <div class="field"><label>时间线</label><select id="b3"><option>8周冲刺</option><option selected>10-12周标准</option><option>14-16周从容</option></select></div>
+    <div class="field"><label>训练史</label><select id="b4"><option>新手</option><option selected>断练重启</option><option>系统训练中</option></select></div>
+  </div></div>
+
+  <div class="card"><h2>C · 训练偏好 <span class="tag">必填</span></h2><div class="grid">
+    <div class="field"><label>每周抗阻天数</label><select id="c1"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
+    <div class="field"><label>器械条件</label><select id="c2"><option selected>商业健身房</option><option>家庭小器械</option><option>徒手</option></select></div>
+    <div class="field"><label>每次训练时长</label><select id="c3"><option>45</option><option selected>60</option><option>90</option></select></div>
+    <div class="field"><label>有氧形式</label><select id="c5"><option selected>坡度走·椭圆机</option><option>跑步</option><option>单车</option><option>游泳</option><option>不做有氧只走路</option></select></div>
+    <div class="field full"><label>多维素质（力量必含，其余勾选）</label><div class="chips">
+      <label><input type="checkbox" checked disabled> 力量</label>
+      <label><input type="checkbox" id="c4p" checked> 爆发</label>
+      <label><input type="checkbox" id="c4e" checked> 耐力</label>
+      <label><input type="checkbox" id="c4f" checked> 柔韧</label>
+    </div></div>
+    <div class="field"><label>专项运动</label><select id="c6"><option>无</option><option>篮球</option><option>攀岩</option><option>游泳</option><option>田径</option><option>武术</option></select></div>
+  </div></div>
+
+  <div class="card"><h2>D · 饮食与生活 <span class="tag">必填</span></h2><div class="grid">
+    <div class="field"><label>热量分配</label><select id="d1"><option selected>训练/休息日分档</option><option>每天平摊</option></select></div>
+    <div class="field"><label>记录精度</label><select id="d2"><option>精确称重</option><option selected>粗略估算</option><option>只跟模板不记录</option></select></div>
+    <div class="field"><label>蛋白来源</label><select id="d3"><option selected>无限制</option><option>不吃红肉</option><option>乳制品不耐</option><option>素食</option></select></div>
+    <div class="field"><label>外食频率</label><select id="d4"><option selected>≤2次/周</option><option>3-5次/周</option><option>几乎天天</option></select></div>
+    <div class="field"><label>饮酒</label><select id="d5"><option>无</option><option selected>偶尔</option><option>经常</option></select></div>
+  </div></div>
+
+  <div class="card"><h2>E · 软问题 <span class="tag">可跳过</span></h2><div class="grid">
+    <div class="field"><label>伤病/动作限制</label><select id="e1"><option selected>无</option><option>肩</option><option>肘</option><option>腰</option><option>膝</option></select></div>
+    <div class="field"><label>睡眠现状</label><select id="e2"><option selected>7-9h</option><option>6-7h</option><option><6h</option></select></div>
+    <div class="field"><label>压力/情绪状态</label><select id="e3"><option selected>正常</option><option>偏高</option></select></div>
+    <div class="field"><label>可穿戴设备</label><select id="e4"><option selected>无</option><option>Apple Watch</option><option>Garmin</option></select></div>
+    <div class="field full" id="watchRow" style="display:none">
+      <label>有可穿戴：填最近两周的日均总消耗（可选，更准）</label>
+      <div style="display:flex;gap:6px"><input id="e4t" type="number" placeholder="训练日消耗 如 2600" style="flex:1"><input id="e4r" type="number" placeholder="休息日消耗 如 2300" style="flex:1"></div>
+    </div>
+  </div></div>
+
+  <div class="btns">
+    <button class="btn-main" onclick="run()">生成我的计划</button>
+    <button class="btn-ghost" onclick="fillDemo()">填示例数据</button>
+    <button class="btn-ghost" onclick="resetForm()">恢复默认</button>
+  </div>
+
+  <div id="result">
+    <div class="card"><h2>速查卡</h2><div class="quick" id="resCards"></div></div>
+    <div class="card"><h2>完整计划（Markdown）</h2>
+      <textarea id="resMd" readonly></textarea>
+      <div class="btns" style="margin-top:10px">
+        <button class="btn-main" style="flex:none;min-width:0" onclick="makePoster()">生成分享长图</button>
+        <button class="btn-ghost" onclick="copyMd()">复制文本</button>
+        <button class="btn-ghost" onclick="downloadMd()">下载 .md</button>
+        <button class="btn-ghost" onclick="window.print()">打印 / 存 PDF</button>
+      </div>
+      <img id="posterPrev" style="display:none;width:220px;margin-top:10px;border:1px solid var(--line);border-radius:10px" alt="海报预览">
+    </div>
+  </div>
+
+  <footer>本工具输出为一般性健身建议，非医疗建议；有基础疾病请先咨询医生。<br>v0.1 原型 · 引擎移植自 lean-muscle-plan skill</footer>
+</div>
+
+<script>
+/*ENGINE-START*/
+function generatePlan(inp){
+  var LBKG=0.45359237;
+  var wKg = inp.weightUnit==='lb' ? inp.weight*LBKG : inp.weight;
+  var wLb = wKg/LBKG;
+  var sex = inp.sex;
+  var bmr = sex==='男' ? 10*wKg + 6.25*inp.heightCm - 5*inp.age + 5
+                       : 10*wKg + 6.25*inp.heightCm - 5*inp.age - 161;
+  var act = {'2':1.35,'3':1.45,'4':1.5,'5':1.6}[String(inp.daysPerWeek)] || 1.45;
+  var tdee = bmr*act;
+  var cDays = Number(inp.daysPerWeek);
+  var trainX = 1 + 0.28/cDays;
+  var restX = (7 - cDays*trainX)/(7-cDays);
+  var trainTDEE = inp.trainTDEE || (tdee*trainX);
+  var restTDEE  = inp.restTDEE  || (tdee*restX);
+  var weeklyTDEE = cDays*trainTDEE + (7-cDays)*restTDEE;
+
+  var bf = inp.bf || (sex==='男'?20:26);
+  var fatKg = wKg*bf/100;
+  var leanKg = wKg-fatKg;
+
+  var muscleAdj = {'新手':1.5,'断练重启':1.8,'系统训练中':0.25}[inp.history] || 1.4;
+  var targetBf = inp.targetBf;
+  var targetW = leanKg/(1-targetBf/100) + muscleAdj;
+  var fatToLoseKg = fatKg - targetW*targetBf/100;
+
+  var base = {'减脂为主保肌（薄肌默认）':0.65,'纯减脂':0.5,'重合成均衡':0.6,'增肌为主':0.35}[inp.priority] || 0.65;
+  var mult = {'8周冲刺':1.1,'10-12周标准':1,'14-16周从容':0.7}[inp.timeline] || 1;
+  var ratePct = Math.min(0.7, base*mult);
+  if (inp.stress==='偏高') ratePct = ratePct*0.8;
+  var fatRateLb = wLb*ratePct/100;
+  var weeklyDeficit = fatRateLb*3500;
+  var d = weeklyDeficit/7;
+
+  function roundN(x,dir,n){ var b=Math.round(x/n)*n; if(dir==='up'&&b<x)b+=n; if(dir==='down'&&b>x)b-=n; return b; }
+  var trainIn=0, restIn=0, flatIntake=0;
+  if(inp.splitMode==='分档'){ trainIn=roundN(trainTDEE-d,'up',100); restIn=roundN(restTDEE-d,'down',100); }
+  else { flatIntake=roundN((weeklyTDEE-weeklyDeficit)/7,'down',100); }
+  var weeklyIntake = inp.splitMode==='分档' ? (cDays*trainIn+(7-cDays)*restIn) : flatIntake*7;
+
+  var protein = Math.round(wKg*2.0/5)*5;
+  var fatG = Math.round(wKg*0.8/5)*5;
+  var carbsT = trainIn ? Math.round((trainIn-protein*4-fatG*9)/4) : 0;
+  var carbsR = restIn ? Math.round((restIn-protein*4-fatG*9)/4) : 0;
+  var carbsF = flatIntake ? Math.round((flatIntake-protein*4-fatG*9)/4) : 0;
+
+  var muscleRateLb = {'新手':0.5,'断练重启':0.45,'系统训练中':0.15}[inp.history] || 0.45;
+  var netLow = fatRateLb - muscleRateLb;
+  var netHigh = fatRateLb - muscleRateLb*0.5;
+
+  var weeks = Math.max(6, Math.round(fatToLoseKg/(fatRateLb*LBKG)));
+  var waistTarget = Math.round(inp.heightCm*(sex==='男'?0.47:0.42));
+
+  var splits = {'2':'全身×2（A/B 交替）','3':'PPL（推/拉/腿）','4':'上下肢×2','5':'PPL + 补强日'};
+  var progression = inp.history==='新手' ? '每周 +1 次或 +2.5 kg' : '每 1–2 周 +1 次或每 2 周 +2.5 kg（主项留 1–3 次余力）';
+
+  return {bmr:Math.round(bmr),tdee:Math.round(tdee),weeklyTDEE:Math.round(weeklyTDEE),
+    fatKg:fatKg,leanKg:leanKg,targetWKg:targetW,targetWLb:targetW/LBKG,fatToLoseKg:fatToLoseKg,fatToLoseLb:fatToLoseKg/LBKG,
+    ratePct:ratePct,fatRateLb:fatRateLb,weeklyDeficit:Math.round(weeklyDeficit),
+    trainIn:trainIn,restIn:restIn,flatIntake:flatIntake,weeklyIntake:weeklyIntake,
+    protein:protein,fatG:fatG,carbsT:carbsT,carbsR:carbsR,carbsF:carbsF,
+    scaleLow:netLow,scaleHigh:netHigh,weeks:weeks,waistTarget:waistTarget,
+    splitName:splits[String(inp.daysPerWeek)]||splits['3'],progression:progression,
+    targetBf:targetBf,bf:bf};
+}
+/*ENGINE-END*/
+
+function byId(id){return document.getElementById(id);}
+function val(id){return byId(id).value;}
+function num(id){var v=parseFloat(byId(id).value);return isFinite(v)?v:null;}
+
+function readInput(){
+  var q=function(id){return document.getElementById(id);};
+  var qualities=[];
+  if(q('c4p').checked)qualities.push('爆发');
+  if(q('c4e').checked)qualities.push('耐力');
+  if(q('c4f').checked)qualities.push('柔韧');
+  return {
+    sex:val('a1'), age:num('a2'), heightCm:num('a3'),
+    weight:num('a4'), weightUnit:val('a4u'),
+    bf:num('a5'), waistCm:num('a6'),
+    targetBf:num('b1')||15, priority:val('b2'), timeline:val('b3'), history:val('b4'),
+    daysPerWeek:val('c1'), equipment:val('c2'), sessionMin:val('c3'),
+    qualities:qualities, cardio:val('c5'), sport:val('c6'),
+    splitMode:val('d1'), tracking:val('d2'), proteinRestriction:val('d3'), eatOut:val('d4'), alcohol:val('d5'),
+    injury:val('e1'), sleep:val('e2'), stress:val('e3'), wearable:val('e4'),
+    trainTDEE:num('e4t')||null, restTDEE:num('e4r')||null
+  };
+}
+
+function progTemplate(p){
+  var t3='周一·推：爆发(药球推/爆发俯卧撑 3×5) → 上斜卧推 3×6-10 → 站姿推举 3×6-10 → 侧平举 3×12-15 → 面拉 3×12-15 → 收尾活动度\n周三·拉：爆发(药球过顶砸 3×5) → 引体/高位下拉 3×5-8 → 划船 3×6-10 → 反向飞鸟 3×12-15 → 锤式弯举 2×10-12 → 悬垂举腿 2-3×8-12\n周五·腿：爆发(跳箱/纵跳 3×5) → 深蹲 3×5-8 → 罗马尼亚硬拉 3×6-10 → 保加利亚分腿蹲 2×10-12 → 提踵 2×12-15 → 农夫行走 3×40m';
+  var t2='A 日：深蹲 3×6-8 → 卧推 3×6-10 → 划船 3×6-10 → 平板支撑 3×30-45s\nB 日：罗马尼亚硬拉 3×6-8 → 推举 3×6-10 → 引体/高位下拉 3×6-8 → 悬垂举腿 2-3×8-12\n两日交替，每次训练日开头可加爆发 3×5';
+  var t4='上×2：卧推 3×6-10 → 引体/高位下拉 3×6-8 → 划船 3×8-10 → 侧平举 2×12-15 → 面拉 2×12-15\n下×2：深蹲 3×5-8 → 罗马尼亚硬拉 3×6-10 → 分腿蹲 2×10-12 → 提踵 2×12-15 → 核心 2-3 组';
+  var t5='PPL 同 3 天版，另加一天补强日：引体 + 上斜推 + 面拉 + 核心，各 2-3 组，轻重量高控制';
+  return {'3':t3,'2':t2,'4':t4,'5':t5}[String(p.daysPerWeek)]||t3;
+}
+
+function buildMd(p,inp){
+  var L=[];
+  L.push('# 我的薄肌计划');
+  L.push('');
+  L.push('> 本计划由本地引擎生成（数据未上传）。一般性健身建议，非医疗建议。');
+  L.push('');
+  L.push('## 速查卡');
+  L.push('- 目标：体重 ≈'+p.targetWKg.toFixed(1)+' kg（'+Math.round(p.targetWLb)+' lb）｜体脂 '+inp.targetBf+'%｜需减脂肪 ≈'+p.fatToLoseKg.toFixed(1)+' kg（'+p.fatToLoseLb.toFixed(1)+' lb）｜预计 '+p.weeks+' 周');
+  if(inp.splitMode==='分档'){
+    L.push('- 热量：训练日 ≈'+p.trainIn+' / 休息日 ≈'+p.restIn+' kcal（周合计 '+p.weeklyIntake+'，周缺口 ≈'+(p.weeklyTDEE-p.weeklyIntake)+' → 脂肪 −'+p.fatRateLb.toFixed(1)+' lb/周）');
+    L.push('- 宏量：蛋白 '+p.protein+' g/天（恒定）；脂肪 ≥'+p.fatG+' g；碳水 训练日 ≈'+p.carbsT+' / 休息日 ≈'+p.carbsR+' g');
+  } else {
+    L.push('- 热量：每天 ≈'+p.flatIntake+' kcal（周缺口 ≈'+(p.weeklyTDEE-p.weeklyIntake)+'）');
+    L.push('- 宏量：蛋白 '+p.protein+' g ｜脂肪 ≥'+p.fatG+' g ｜碳水 ≈'+p.carbsF+' g');
+  }
+  L.push('- 训练：'+p.splitName+'｜每肌群 6–10 组/周｜'+p.progression);
+  L.push('- 监测：秤上净降 −'+p.scaleLow.toFixed(1)+'~−'+p.scaleHigh.toFixed(1)+' lb/周｜腰围每周｜主项力量不降');
+  L.push('');
+  L.push('## 1 目标方程');
+  L.push('- 当前：体重 '+inp.weight+' '+inp.weightUnit+'，体脂 '+p.bf+'% → 脂肪 '+p.fatKg.toFixed(1)+' kg，去脂体重 '+p.leanKg.toFixed(1)+' kg');
+  L.push('- 目标：'+inp.targetBf+'% 体脂（'+inp.history+' → 增肌调整已计入）→ 终点体重 ≈'+p.targetWKg.toFixed(1)+' kg');
+  L.push('- 需要减纯脂肪 ≈'+p.fatToLoseKg.toFixed(1)+' kg ≈ '+p.fatToLoseLb.toFixed(1)+' lb');
+  L.push('');
+  L.push('## 2 能量平衡');
+  L.push('- BMR ≈'+p.bmr+' kcal；周 TDEE ≈'+p.weeklyTDEE+'（'+(inp.wearable==='无'?'公式估算':'按可穿戴数据')+'）');
+  L.push('- 周缺口 = '+p.fatRateLb.toFixed(1)+' lb × 3,500 ≈ '+p.weeklyDeficit+' kcal');
+  if(inp.splitMode==='分档'){ L.push('- 分档：训练日 '+p.trainIn+'（TDEE '+Math.round(p.weeklyTDEE)+' 结构 −'+Math.round(p.weeklyDeficit/7)+'）、休息日 '+p.restIn+'；每 2 周按秤速校准一次'); }
+  else { L.push('- 平摊：每日 '+p.flatIntake+' kcal；每 2 周按秤速校准一次'); }
+  L.push('- 真实周 TDEE ≈ 周摄入 + 3,500 × 周均秤降(lb)，每 2 周反推一次');
+  L.push('');
+  L.push('## 3 三杠杆');
+  L.push('1. 蛋白质：'+p.protein+' g/天（≈2 g/kg），分 3–4 餐 × 25–40 g');
+  L.push('2. 力量训练：每肌群 6–10 组/周，复合动作为主；力量不降 ≈ 肌肉没掉');
+  L.push('3. 速率 + 睡眠：脂肪 −'+p.fatRateLb.toFixed(1)+' lb/周（≤0.7% 体重）；睡眠 7–9 h（'+inp.sleep+'）');
+  L.push('');
+  L.push('## 4 素质排序');
+  var order=['力量'];
+  if(inp.qualities.indexOf('爆发')>=0)order.push('爆发');
+  if(inp.qualities.indexOf('耐力')>=0)order.push('耐力');
+  if(inp.qualities.indexOf('柔韧')>=0)order.push('柔韧');
+  L.push('- 排序：'+order.join(' → ')+'（'+inp.sport+'专项'+(inp.sport==='无'?'':': 素质权重按专项微调')+'）');
+  L.push('- 有氧：'+(inp.cardio.indexOf('不做')>=0?'以步数 8,000–12,000 代替有氧':inp.cardio+' Zone 2（talk test，2–3 次 × 30–45 min）'));
+  L.push('');
+  L.push('## 5 周计划（'+p.splitName+'）');
+  L.push(progTemplate(inp));
+  L.push('- 器械：'+inp.equipment+'；每次 '+inp.sessionMin+' min');
+  if(inp.injury!=='无')L.push('- 伤病替代：'+inp.injury+' 相关动作按无痛变体执行，痛就停');
+  L.push('');
+  L.push('## 6 监测与里程碑');
+  L.push('- 三线：腰围=脂肪、力量=肌肉、秤=净差；秤速带 −'+p.scaleLow.toFixed(1)+'~−'+p.scaleHigh.toFixed(1)+' lb/周');
+  L.push('- 第 4 周：腰围 −2~−3 cm、力量持平；第 8 周：腰围 −4~−6 cm（目标 ≈'+p.waistTarget+' cm）、体脂接近 '+inp.targetBf+'%');
+  L.push('- 第 '+(p.weeks)+' 周前后达标 → 反向饮食：每周 +100–150 kcal，4–8 周回到维持');
+  L.push('');
+  L.push('## 7 风险避坑');
+  L.push('- 总原则：保蛋白 → 保力量训练 → 缺口可随时放弃，第二天继续');
+  L.push('- 外食 '+inp.eatOut+'：'+(inp.eatOut.indexOf('≤2')>=0?'影响可控':'缺口预留要更保守，选烤/蒸+定量主食'));
+  L.push('- 饮酒 '+inp.alcohol+'：'+(inp.alcohol==='经常'?'建议减脂期基本戒断':'偶尔可无糖气泡水替代'));
+  if(inp.stress==='偏高')L.push('- 压力偏高：缺口已取保守档，恢复优先');
+  L.push('');
+  L.push('## 8 启动清单');
+  L.push('1. 基线：体重 7 日均值 / 腰围 3 次 / 主项 5RM / 照片');
+  L.push('2. 记录：'+inp.tracking+'；训练日志记 动作×重量×次数');
+  L.push('3. 采购：'+(inp.proteinRestriction==='素食'?'豆腐/豆浆/豆类/植物蛋白粉':'乳清/希腊酸奶/蛋/鸡胸/瘦牛肉/鱼')+(inp.proteinRestriction==='不吃红肉'?'（红肉换鸡/鱼/蛋）':'')+(inp.proteinRestriction==='乳制品不耐'?'（乳制品换无乳糖/植物蛋白）':''));
+  L.push('4. 提醒：第 2 周校准 / 第 4、8 周检查点 / 每月测试日');
+  L.push('5. 优先级：蛋白 > 力量 > 缺口 > 有氧 > 柔韧');
+  return L.join('\n');
+}
+
+function run(){
+  var inp=readInput();
+  if(!inp.age||!inp.heightCm||!inp.weight){alert('请先填 年龄/身高/体重（A 区）');return;}
+  var p=generatePlan(inp);
+  window._p=p; window._inp=inp;
+  var cards=[
+    ['目标体重',Math.round(p.targetWLb)+' lb / '+p.targetWKg.toFixed(1)+' kg'],
+    [inp.splitMode==='分档'?'训练日/休息日': '每天热量', inp.splitMode==='分档'? (p.trainIn+' / '+p.restIn+' kcal') : (p.flatIntake+' kcal')],
+    ['蛋白质',p.protein+' g/天'],
+    ['周缺口',(p.weeklyTDEE-p.weeklyIntake)+' kcal → −'+p.fatRateLb.toFixed(1)+' lb/周'],
+    ['预计周期',p.weeks+' 周'],
+    ['训练',p.splitName]
+  ];
+  byId('resCards').innerHTML=cards.map(function(c){return '<div class="q"><b>'+c[1]+'</b><span>'+c[0]+'</span></div>';}).join('');
+  byId('resMd').value=buildMd(p,inp);
+  byId('result').style.display='block';
+  byId('result').scrollIntoView({behavior:'smooth'});
+}
+function copyMd(){var t=byId('resMd');t.select();try{navigator.clipboard.writeText(t.value);alert('已复制');}catch(e){document.execCommand('copy');alert('已复制');}}
+function downloadMd(){var b=new Blob([byId('resMd').value],{type:'text/markdown;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='我的薄肌计划.md';a.click();}
+function fillDemo(){byId('a1').value='男';byId('a2').value=30;byId('a3').value=175;byId('a4').value=75;byId('a4u').value='kg';byId('a5').value=22;byId('a6').value=85;run();}
+function resetForm(){location.reload();}
+byId('e4').addEventListener('change',function(){byId('watchRow').style.display=byId('e4').value==='无'?'none':'flex';});
+
+/*POSTER-START*/
+function posterSvg(p,inp){
+  function f0(x){return Math.round(x).toLocaleString('en-US');}
+  var W=750,H=1220;
+  var kcal = inp.splitMode==='分档' ? (p.trainIn+' / '+p.restIn) : (''+p.flatIntake);
+  var heat = inp.splitMode==='分档' ? ('训练日 '+p.trainIn+' · 休息日 '+p.restIn+' kcal；蛋白每餐 25–40 g') : ('每天 '+p.flatIntake+' kcal；蛋白每餐 25–40 g');
+  var s=[];
+  s.push('<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">');
+  s.push('<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0b7d58"/><stop offset="1" stop-color="#17b07d"/></linearGradient></defs>');
+  s.push('<style>text{font-family:"PingFang SC","Microsoft YaHei",sans-serif}</style>');
+  s.push('<rect width="'+W+'" height="'+H+'" fill="#ffffff"/>');
+  s.push('<rect width="'+W+'" height="300" fill="url(#g)"/>');
+  s.push('<text x="375" y="96" text-anchor="middle" font-size="46" font-weight="bold" fill="#ffffff">我的薄肌计划</text>');
+  s.push('<text x="375" y="152" text-anchor="middle" font-size="27" fill="#eafaf2">目标体脂 '+inp.targetBf+'% · 预计 '+p.weeks+' 周</text>');
+  s.push('<text x="375" y="205" text-anchor="middle" font-size="23" fill="#d7f3e6">'+inp.weight+' '+inp.weightUnit+' · 体脂 '+p.bf+'% → '+Math.round(p.targetWLb)+' lb · '+(Math.round(p.targetWKg*10)/10)+' kg</text>');
+  var cards=[
+    ['目标体重', Math.round(p.targetWLb)+' lb'],
+    ['每日热量', kcal+' kcal'],
+    ['蛋白质', p.protein+' g/天'],
+    ['周缺口', f0(p.weeklyTDEE-p.weeklyIntake)+' kcal'],
+    ['训练', p.splitName],
+    ['预计周期', p.weeks+' 周']
+  ];
+  var cw=315,ch=128,gx=40,gy=330,gapx=40,gapy=26;
+  for(var i=0;i<6;i++){
+    var col=i%2,row=Math.floor(i/2);
+    var x=gx+col*(cw+gapx),y=gy+row*(ch+gapy);
+    s.push('<rect x="'+x+'" y="'+y+'" width="'+cw+'" height="'+ch+'" rx="18" fill="#f2fbf7" stroke="#d8ece2" stroke-width="2"/>');
+    s.push('<text x="'+(x+cw/2)+'" y="'+(y+52)+'" text-anchor="middle" font-size="38" font-weight="bold" fill="#0b7d58">'+cards[i][1]+'</text>');
+    s.push('<text x="'+(x+cw/2)+'" y="'+(y+96)+'" text-anchor="middle" font-size="22" fill="#5c6b64">'+cards[i][0]+'</text>');
+  }
+  var sy=gy+3*(ch+gapy)+26;
+  var rows=[
+    ['吃', heat],
+    ['练', p.splitName+'；每肌群 6–10 组；主项留 1–3 次余力'],
+    ['测', '秤看周均值 −'+p.scaleLow.toFixed(1)+'~−'+p.scaleHigh.toFixed(1)+' lb/周；腰围每周；力量不降']
+  ];
+  for(var j=0;j<3;j++){
+    var ry=sy+j*92;
+    s.push('<rect x="40" y="'+ry+'" width="670" height="70" rx="14" fill="#f7faf9" stroke="#e3e9e6" stroke-width="2"/>');
+    s.push('<rect x="40" y="'+ry+'" width="70" height="70" rx="14" fill="#0f9d6e"/>');
+    s.push('<text x="75" y="'+(ry+46)+'" text-anchor="middle" font-size="28" font-weight="bold" fill="#ffffff">'+rows[j][0]+'</text>');
+    s.push('<text x="130" y="'+(ry+44)+'" font-size="21" fill="#17211d">'+rows[j][1]+'</text>');
+  }
+  var my=sy+3*92+30;
+  s.push('<text x="375" y="'+my+'" text-anchor="middle" font-size="22" fill="#5c6b64">第 4 周 腰围 −2~−3 cm · 第 8 周 接近 '+inp.targetBf+'% · 达标后反向饮食 4–8 周</text>');
+  s.push('<text x="375" y="'+(my+40)+'" text-anchor="middle" font-size="19" fill="#9aa8a1">一般性健身建议，非医疗建议</text>');
+  s.push('<text x="375" y="'+(H-34)+'" text-anchor="middle" font-size="19" font-weight="bold" fill="#0b7d58">薄肌计划生成器 · 本地计算 · 数据不上传</text>');
+  s.push('</svg>');
+  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(s.join(''));
+}
+/*POSTER-END*/
+
+function makePoster(){
+  if(!window._p){alert('请先生成计划');return;}
+  var img=new Image();
+  img.onload=function(){
+    var c=document.createElement('canvas');
+    c.width=1500;c.height=2440;
+    var ctx=c.getContext('2d');
+    ctx.scale(2,2);
+    ctx.drawImage(img,0,0,750,1220);
+    var url=c.toDataURL('image/png');
+    var prev=byId('posterPrev');
+    prev.src=url;prev.style.display='block';
+    var a=document.createElement('a');a.href=url;a.download='我的薄肌计划.png';a.click();
+  };
+  img.onerror=function(){alert('长图生成失败，请刷新页面重试');};
+  img.src=posterSvg(window._p,window._inp);
+}
+</script>
+</body>
+</html>
