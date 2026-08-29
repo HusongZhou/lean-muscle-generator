@@ -47,6 +47,7 @@ footer{font-size:12px;color:var(--sub);text-align:center;margin-top:26px}
     <h1>薄肌计划生成器</h1>
     <p>填一份问卷（默认值可跳过），30 秒生成你的个性化薄肌减脂计划</p>
     <div class="priv">🔒 全部计算在本机浏览器完成，你的身体数据不会上传到任何服务器</div>
+    <button class="btn-ghost" style="background:rgba(255,255,255,.16);color:#fff;margin-top:12px" onclick="openP()">📐 背后的第一性原理</button>
   </div>
 
   <div class="card"><h2>A · 身体数据 <span class="tag">必填</span></h2><div class="grid">
@@ -67,6 +68,7 @@ footer{font-size:12px;color:var(--sub);text-align:center;margin-top:26px}
 
   <div class="card"><h2>C · 训练偏好 <span class="tag">必填</span></h2><div class="grid">
     <div class="field"><label>每周抗阻天数</label><select id="c1"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
+    <div class="field"><label>下肢训练</label><select id="c7"><option selected>练腿（全面发展）</option><option>不练腿（专注上半身）</option></select></div>
     <div class="field"><label>器械条件</label><select id="c2"><option selected>商业健身房</option><option>家庭小器械</option><option>徒手</option></select></div>
     <div class="field"><label>每次训练时长</label><select id="c3"><option>45</option><option selected>60</option><option>90</option></select></div>
     <div class="field"><label>有氧形式</label><select id="c5"><option selected>坡度走·椭圆机</option><option>跑步</option><option>单车</option><option>游泳</option><option>不做有氧只走路</option></select></div>
@@ -107,6 +109,7 @@ footer{font-size:12px;color:var(--sub);text-align:center;margin-top:26px}
   <div id="result">
     <div class="card"><h2>速查卡</h2><div class="quick" id="resCards"></div></div>
     <div class="card"><h2>完整计划（Markdown）</h2>
+      <a href="javascript:openP()" style="display:inline-block;margin-bottom:8px;font-size:13px;color:var(--acc2)">📐 这套数字背后的原理 →</a>
       <textarea id="resMd" readonly></textarea>
       <div class="btns" style="margin-top:10px">
         <button class="btn-main" style="flex:none;min-width:0" onclick="makePoster()">生成分享长图</button>
@@ -118,7 +121,26 @@ footer{font-size:12px;color:var(--sub);text-align:center;margin-top:26px}
     </div>
   </div>
 
-  <footer>本工具输出为一般性健身建议，非医疗建议；有基础疾病请先咨询医生。<br>v0.1 原型 · 引擎移植自 lean-muscle-plan skill</footer>
+  <div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;overflow:auto" onclick="if(event.target===this)closeP()">
+    <div style="background:#fff;max-width:660px;margin:36px auto;border-radius:16px;padding:22px;line-height:1.7">
+      <h2 style="margin-top:0">📐 背后的第一性原理</h2>
+      <ol style="font-size:14px;padding-left:20px">
+        <li><b>目标方程</b>：体重 = 去脂体重 + 脂肪。先算终点（去脂体重 ÷（1 − 目标体脂）+ 增肌调整），再倒推要减多少脂肪。</li>
+        <li><b>能量算术</b>：1 lb 体脂 ≈ 3,500 kcal。减脂速度只由周累计缺口决定，不靠"干净饮食"玄学。</li>
+        <li><b>分档吃法</b>：训练日多 400–500 kcal 保训练质量、休息日少 400–500 kcal 烧脂肪——每天缺口相等，训练日不挨饿。</li>
+        <li><b>三杠杆锁肌肉</b>：蛋白（1.9–2.2 g/kg）+ 力量训练（每肌群 6–10 组/周）+ 慢缺口（≤0.7% 体重/周）与 7–9 h 睡眠。</li>
+        <li><b>秤 ≠ 脂肪</b>：秤测的是「脂肪 − 肌肉」的净差。腰围才是脂肪的纯代理，力量是肌肉的代理——三条线分开看。</li>
+        <li><b>薄肌视觉</b>：好看 = 倒三角（肩宽/背宽/胸上沿）× 低体脂。腹斜肌练厚 = 腰粗、斜方练大 = 显矮，所以不练。</li>
+        <li><b>剂量</b>：增肌要 10+ 组/肌群/周（Schoenfeld 2017）；薄肌只要 6–10 组的维持区，省下的恢复预算给爆发/耐力/柔韧。</li>
+        <li><b>校准闭环</b>：手表是模型、秤是真相。真实周 TDEE ≈ 周摄入 + 3,500 × 周均秤降——每 2 周反推一次。</li>
+        <li><b>达标后</b>：反向饮食（每周 +100–150 kcal）防反弹，比骤增热量更稳。</li>
+        <li><b>不练腿也可行</b>：下肢是可选项——形体目标优先时，日常快走/骑行维持基础功能即可。</li>
+      </ol>
+      <p style="font-size:12px;color:var(--sub)">参考文献：Helms 2014 (JISSN) · Morton 2018 (BJSM) · Schoenfeld 2017 (J Sports Sci) · Nedeltcheva 2010 (Ann Intern Med) · WHO 2020 · Afonso 2021 (Sports Med) · Barakat 2020 (SCJ)</p>
+      <button class="btn-ghost" onclick="closeP()">关闭</button>
+    </div>
+  </div>
+  <footer>本工具输出为一般性健身建议，非医疗建议；有基础疾病请先咨询医生。<br>v0.2 原型 · 引擎移植自 lean-muscle-plan skill</footer>
 </div>
 
 <script>
@@ -131,6 +153,8 @@ function generatePlan(inp){
   var bmr = sex==='男' ? 10*wKg + 6.25*inp.heightCm - 5*inp.age + 5
                        : 10*wKg + 6.25*inp.heightCm - 5*inp.age - 161;
   var act = {'2':1.35,'3':1.45,'4':1.5,'5':1.6}[String(inp.daysPerWeek)] || 1.45;
+  var noLegs = inp.legs==='不练腿（专注上半身）';
+  if(noLegs) act = act*0.95;
   var tdee = bmr*act;
   var cDays = Number(inp.daysPerWeek);
   var trainX = 1 + 0.28/cDays;
@@ -175,7 +199,9 @@ function generatePlan(inp){
   var weeks = Math.max(6, Math.round(fatToLoseKg/(fatRateLb*LBKG)));
   var waistTarget = Math.round(inp.heightCm*(sex==='男'?0.47:0.42));
 
-  var splits = {'2':'全身×2（A/B 交替）','3':'PPL（推/拉/腿）','4':'上下肢×2','5':'PPL + 补强日'};
+  var splitsL = {'2':'全身×2（A/B 交替）','3':'PPL（推/拉/腿）','4':'上下肢×2','5':'PPL + 补强日'};
+  var splitsU = {'2':'推/拉（上肢版）','3':'推 / 拉 / 肩背补强','4':'推拉×2 交替','5':'推/拉 ×2 + 补强'};
+  var splits = noLegs ? splitsU : splitsL;
   var progression = inp.history==='新手' ? '每周 +1 次或 +2.5 kg' : '每 1–2 周 +1 次或每 2 周 +2.5 kg（主项留 1–3 次余力）';
 
   return {bmr:Math.round(bmr),tdee:Math.round(tdee),weeklyTDEE:Math.round(weeklyTDEE),
@@ -204,7 +230,7 @@ function readInput(){
     weight:num('a4'), weightUnit:val('a4u'),
     bf:num('a5'), waistCm:num('a6'),
     targetBf:num('b1')||15, priority:val('b2'), timeline:val('b3'), history:val('b4'),
-    daysPerWeek:val('c1'), equipment:val('c2'), sessionMin:val('c3'),
+    daysPerWeek:val('c1'), legs:val('c7'), equipment:val('c2'), sessionMin:val('c3'),
     qualities:qualities, cardio:val('c5'), sport:val('c6'),
     splitMode:val('d1'), tracking:val('d2'), proteinRestriction:val('d3'), eatOut:val('d4'), alcohol:val('d5'),
     injury:val('e1'), sleep:val('e2'), stress:val('e3'), wearable:val('e4'),
@@ -212,12 +238,21 @@ function readInput(){
   };
 }
 
-function progTemplate(p){
-  var t3='周一·推：爆发(药球推/爆发俯卧撑 3×5) → 上斜卧推 3×6-10 → 站姿推举 3×6-10 → 侧平举 3×12-15 → 面拉 3×12-15 → 收尾活动度\n周三·拉：爆发(药球过顶砸 3×5) → 引体/高位下拉 3×5-8 → 划船 3×6-10 → 反向飞鸟 3×12-15 → 锤式弯举 2×10-12 → 悬垂举腿 2-3×8-12\n周五·腿：爆发(跳箱/纵跳 3×5) → 深蹲 3×5-8 → 罗马尼亚硬拉 3×6-10 → 保加利亚分腿蹲 2×10-12 → 提踵 2×12-15 → 农夫行走 3×40m';
-  var t2='A 日：深蹲 3×6-8 → 卧推 3×6-10 → 划船 3×6-10 → 平板支撑 3×30-45s\nB 日：罗马尼亚硬拉 3×6-8 → 推举 3×6-10 → 引体/高位下拉 3×6-8 → 悬垂举腿 2-3×8-12\n两日交替，每次训练日开头可加爆发 3×5';
-  var t4='上×2：卧推 3×6-10 → 引体/高位下拉 3×6-8 → 划船 3×8-10 → 侧平举 2×12-15 → 面拉 2×12-15\n下×2：深蹲 3×5-8 → 罗马尼亚硬拉 3×6-10 → 分腿蹲 2×10-12 → 提踵 2×12-15 → 核心 2-3 组';
-  var t5='PPL 同 3 天版，另加一天补强日：引体 + 上斜推 + 面拉 + 核心，各 2-3 组，轻重量高控制';
-  return {'3':t3,'2':t2,'4':t4,'5':t5}[String(p.daysPerWeek)]||t3;
+function progTemplate(inp){
+  var noLegs = inp.legs==='不练腿（专注上半身）';
+  var t3 = noLegs
+    ? '周一·推：爆发(药球推/爆发俯卧撑 3×5) → 上斜卧推 3×6-10 → 站姿推举 3×6-10 → 侧平举 3×12-15 → 面拉 3×12-15 → 收尾活动度\n周三·拉：爆发(药球过顶砸 3×5) → 引体/高位下拉 3×5-8 → 划船 3×6-10 → 反向飞鸟 3×12-15 → 锤式弯举 2×10-12 → 悬垂举腿 2-3×8-12\n周五·肩背补强：引体 3×6-8 → 上斜推 3×8-10 → 侧平举 3×12-15 → 面拉 3×12-15 → 核心 2-3 组'
+    : '周一·推：爆发(药球推/爆发俯卧撑 3×5) → 上斜卧推 3×6-10 → 站姿推举 3×6-10 → 侧平举 3×12-15 → 面拉 3×12-15 → 收尾活动度\n周三·拉：爆发(药球过顶砸 3×5) → 引体/高位下拉 3×5-8 → 划船 3×6-10 → 反向飞鸟 3×12-15 → 锤式弯举 2×10-12 → 悬垂举腿 2-3×8-12\n周五·腿：爆发(跳箱/纵跳 3×5) → 深蹲 3×5-8 → 罗马尼亚硬拉 3×6-10 → 保加利亚分腿蹲 2×10-12 → 提踵 2×12-15 → 农夫行走 3×40m';
+  var t2 = noLegs
+    ? 'A 日·推：上斜卧推 3×6-10 → 推举 3×6-10 → 侧平举 2×12-15 → 面拉 2×12-15\nB 日·拉：引体 3×6-8 → 划船 3×8-10 → 反向飞鸟 2×12-15 → 核心 2-3 组\n两日交替，训练日开头可加爆发 3×5'
+    : 'A 日：深蹲 3×6-8 → 卧推 3×6-10 → 划船 3×6-10 → 平板支撑 3×30-45s\nB 日：罗马尼亚硬拉 3×6-8 → 推举 3×6-10 → 引体/高位下拉 3×6-8 → 悬垂举腿 2-3×8-12\n两日交替，每次训练日开头可加爆发 3×5';
+  var t4 = noLegs
+    ? '推×2：上斜卧推 3×6-10 → 推举 3×6-10 → 侧平举 2×12-15 → 面拉 2×12-15\n拉×2：引体 3×6-8 → 划船 3×8-10 → 反向飞鸟 2×12-15 → 核心 2-3 组'
+    : '上×2：卧推 3×6-10 → 引体/高位下拉 3×6-8 → 划船 3×8-10 → 侧平举 2×12-15 → 面拉 2×12-15\n下×2：深蹲 3×5-8 → 罗马尼亚硬拉 3×6-10 → 分腿蹲 2×10-12 → 提踵 2×12-15 → 核心 2-3 组';
+  var t5 = noLegs
+    ? '推/拉 ×2（内容同 4 天版），另加一天肩背补强：引体 + 侧平举 + 面拉 + 核心，各 2-3 组'
+    : 'PPL 同 3 天版，另加一天补强日：引体 + 上斜推 + 面拉 + 核心，各 2-3 组，轻重量高控制';
+  return {'3':t3,'2':t2,'4':t4,'5':t5}[String(inp.daysPerWeek)]||t3;
 }
 
 function buildMd(p,inp){
@@ -266,6 +301,7 @@ function buildMd(p,inp){
   L.push('## 5 周计划（'+p.splitName+'）');
   L.push(progTemplate(inp));
   L.push('- 器械：'+inp.equipment+'；每次 '+inp.sessionMin+' min');
+  if(inp.legs==='不练腿（专注上半身）')L.push('- 下肢：不安排专项腿部训练；以日常快走/骑行/爬楼维持基础下肢功能（形体优先）');
   if(inp.injury!=='无')L.push('- 伤病替代：'+inp.injury+' 相关动作按无痛变体执行，痛就停');
   L.push('');
   L.push('## 6 监测与里程碑');
@@ -311,6 +347,8 @@ function downloadMd(){var b=new Blob([byId('resMd').value],{type:'text/markdown;
 function fillDemo(){byId('a1').value='男';byId('a2').value=30;byId('a3').value=175;byId('a4').value=75;byId('a4u').value='kg';byId('a5').value=22;byId('a6').value=85;run();}
 function resetForm(){location.reload();}
 byId('e4').addEventListener('change',function(){byId('watchRow').style.display=byId('e4').value==='无'?'none':'flex';});
+function openP(){byId('modal').style.display='block';}
+function closeP(){byId('modal').style.display='none';}
 
 /*POSTER-START*/
 function posterSvg(p,inp){
