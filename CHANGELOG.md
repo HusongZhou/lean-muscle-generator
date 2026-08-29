@@ -4,6 +4,12 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，版本号遵循 [语义化版本 SemVer](https://semver.org/lang/zh-CN/)。
 
+## [0.6.1] - 2026-08-29
+
+### 变更
+
+- 「你为什么需要薄肌？」弹窗文案精简：删除对比段的指甲刀细节句与弹窗底部免责行
+
 ## [0.6.0] - 2026-08-29
 
 ### 新增
