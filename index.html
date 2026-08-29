@@ -54,11 +54,11 @@ footer{font-size:12px;color:var(--sub);text-align:center;margin-top:26px}
     <h1>薄肌计划生成器</h1>
     <p>填一份问卷（默认值可跳过），30 秒生成你的个性化薄肌减脂计划</p>
     <div class="priv">🔒 全部计算在本机浏览器完成，你的身体数据不会上传到任何服务器</div>
-    <button class="btn-ghost" style="background:rgba(255,255,255,.16);color:#fff;margin-top:12px" onclick="openP()">📐 背后的第一性原理</button>
+    <button class="btn-main" style="margin-top:14px" onclick="openW()">🔥 你为什么需要薄肌？</button>
+    <button class="btn-ghost" style="background:rgba(255,255,255,.16);color:#fff;margin-top:12px" onclick="openP()">📐 薄肌的第一性原理</button>
   </div>
 
   <div class="card"><h2>A · 身体数据 <span class="tag">必填</span></h2><div class="grid">
-    <div class="field"><label>性别</label><select id="a1"><option>男</option><option>女</option></select></div>
     <div class="field"><label>年龄</label><input id="a2" type="number" placeholder="如 25"></div>
     <div class="field"><label>身高（cm）</label><input id="a3" type="number" placeholder="如 175"></div>
     <div class="field"><label>体重</label><div style="display:flex;gap:6px"><input id="a4" type="number" placeholder="如 70" style="flex:1"><select id="a4u"><option>kg</option><option>lb</option></select></div></div>
@@ -68,24 +68,22 @@ footer{font-size:12px;color:var(--sub);text-align:center;margin-top:26px}
 
   <div class="card"><h2>B · 目标 <span class="tag">必填</span></h2><div class="grid">
     <div class="field"><label>目标体脂率 %</label><input id="b1" type="number" value="15"></div>
-    <div class="field"><label>减脂/增肌优先级</label><select id="b2"><option>减脂为主保肌（薄肌默认）</option><option>纯减脂</option><option>重合成均衡</option><option>增肌为主</option></select></div>
     <div class="field"><label>时间线</label><select id="b3"><option>8周冲刺</option><option selected>10-12周标准</option><option>14-16周从容</option></select></div>
-    <div class="field"><label>训练史</label><select id="b4"><option>新手</option><option selected>断练重启</option><option>系统训练中</option></select></div>
+    <div class="field"><label>训练史</label><select id="b4"><option selected>新手</option><option>进阶</option><option>老手</option></select></div>
   </div></div>
 
   <div class="card"><h2>C · 训练偏好 <span class="tag">必填</span></h2><div class="grid">
-    <div class="field"><label>每周抗阻天数</label><select id="c1"><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
-    <div class="field"><label>下肢训练</label><select id="c7"><option selected>练腿（全面发展）</option><option>不练腿（专注上半身）</option></select></div>
+    <div class="field"><label>每周抗阻天数（科学甜区 2–4 天）</label><select id="c1"><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select></div>
+    <div class="field"><label>下肢训练</label><select id="c7"><option selected>不练腿（专注上半身）</option><option>练腿（全面发展）</option></select></div>
     <div class="field"><label>器械条件</label><select id="c2"><option selected>商业健身房</option><option>家庭小器械</option><option>徒手</option></select></div>
-    <div class="field"><label>每次训练时长</label><select id="c3"><option>45</option><option selected>60</option><option>90</option></select></div>
-    <div class="field"><label>有氧形式</label><select id="c5"><option selected>坡度走·椭圆机</option><option>跑步</option><option>单车</option><option>游泳</option><option>不做有氧只走路</option></select></div>
+    <div class="field"><label>每次训练时长（分钟，有效区间 30–90）</label><input id="c3" type="number" value="60" min="30" max="90"></div>
+    <div class="field"><label>有氧 / 专项运动</label><select id="c5"><option selected>不做有氧，只日常走路</option><option>坡度走 · 椭圆机</option><option>跑步</option><option>单车</option><option>游泳</option><option>篮球</option><option>攀岩</option><option>田径</option><option>武术</option></select></div>
     <div class="field full"><label>多维素质（力量必含，其余勾选）</label><div class="chips">
       <label><input type="checkbox" checked disabled> 力量</label>
       <label><input type="checkbox" id="c4p" checked> 爆发</label>
       <label><input type="checkbox" id="c4e" checked> 耐力</label>
       <label><input type="checkbox" id="c4f" checked> 柔韧</label>
     </div></div>
-    <div class="field"><label>专项运动</label><select id="c6"><option>无</option><option>篮球</option><option>攀岩</option><option>游泳</option><option>田径</option><option>武术</option></select></div>
   </div></div>
 
   <div class="card"><h2>D · 饮食与生活 <span class="tag">必填</span></h2><div class="grid">
@@ -117,7 +115,7 @@ footer{font-size:12px;color:var(--sub);text-align:center;margin-top:26px}
     <div class="card"><h2>速查卡</h2><div class="quick" id="resCards"></div></div>
     <div class="card"><h2>🗓️ 周训练计划示例</h2><div id="weekCard"></div></div>
     <div class="card"><h2>完整计划（Markdown）</h2>
-      <a href="javascript:openP()" style="display:inline-block;margin-bottom:8px;font-size:13px;color:var(--acc2)">📐 这套数字背后的原理 →</a>
+      <a href="javascript:openP()" style="display:inline-block;margin-bottom:8px;font-size:13px;color:var(--acc2)">📐 薄肌的第一性原理 →</a>
       <textarea id="resMd" readonly></textarea>
       <div class="btns" style="margin-top:10px">
         <button class="btn-main" style="flex:none;min-width:0" onclick="makePoster()">生成分享长图</button>
@@ -129,26 +127,62 @@ footer{font-size:12px;color:var(--sub);text-align:center;margin-top:26px}
     </div>
   </div>
 
+  <div id="modalW" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:51;overflow:auto" onclick="if(event.target===this)closeW()">
+    <div style="background:#fff;max-width:660px;margin:36px auto;border-radius:16px;padding:24px;line-height:1.75">
+      <h2 style="margin-top:0">🔥 你为什么需要薄肌？</h2>
+      <p style="font-size:15px"><b>男人不仅要拼事业，更要拼的是——脱了衣服像不像回事。</b></p>
+      <ul style="font-size:14px;padding-left:20px">
+        <li>同一件衬衫：穿在你身上是<b>NPC</b>，穿在别人身上是<b>夯爆了</b>——醒醒吧，你不是不会穿搭，你只是<b>没身材</b>。</li>
+      </ul>
+      <p style="font-size:14px;background:#fdf3e7;border-radius:10px;padding:12px"><b>最火的对比就在当下：孙宇晨 VS 张继科。</b><br>
+      一个，币圈顶流、身家百亿；一个，奥运冠军、国球一哥。<br>
+      论钱，孙宇晨赢了几个数量级；论身材，张继科把「薄肌」两个字焊在身上。<br>
+      孙割砸钱砸到热搜，想亲密一下还得靠指甲刀；张继科的指甲刀二十多年崭新如初——可景甜被骗了那么多钱，还心甘情愿把名字纹在背上。<br>
+      <b>上亿身家砸不开的门，薄肌推门就进。</b></p>
+      <p style="font-size:14px">上亿身家的没几个，但只要你愿意，<b>薄肌</b>一定练得出来。</p>
+      <p style="font-size:14px">收藏夹里 200 个健身计划吃灰，秤上的数字却一动不动——你缺的不是计划，是成为薄肌的那套<b>底层逻辑</b>：一份从<b>底层原理</b>出发、把每一步都替你拆解清楚的计划。</p>
+      <p style="font-size:14px"><b>薄肌的系统性好处：</b></p>
+      <ol style="font-size:14px;padding-left:20px">
+        <li><b>视觉杠杆</b>：低体脂 × 倒三角 = 穿衣显瘦、脱衣有肉。</li>
+        <li><b>健康红利</b>：睾酮更高、精力更足、体检单更干净——身材本身就是最好的补剂。</li>
+        <li><b>代谢优势</b>：每公斤肌肉每天多烧约 13 kcal——练出来就是<b>长期提款机</b>。</li>
+        <li><b>抗衰老</b>：30 岁后不练肌肉年流失约 1%，力量训练是少数被验证的「逆龄」干预。</li>
+        <li><b>稀缺性</b>：钱能继承，薄肌只能自己练——所以它贵。</li>
+      </ol>
+      <p style="font-size:15px"><b>别刷了——刷再多视频，肩也不会自己变宽。你的第一份薄肌计划，30 秒免费生成，现在，轮到你了。</b></p>
+      <p style="font-size:12px;color:var(--sub)">本页为传播向表达，具体建议以计划正文为准；一般性健身建议，非医疗建议。</p>
+      <button class="btn-ghost" onclick="closeW()">关闭</button>
+    </div>
+  </div>
   <div id="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;overflow:auto" onclick="if(event.target===this)closeP()">
     <div style="background:#fff;max-width:660px;margin:36px auto;border-radius:16px;padding:22px;line-height:1.7">
-      <h2 style="margin-top:0">📐 背后的第一性原理</h2>
+      <h2 style="margin-top:0">📐 薄肌的第一性原理</h2>
+      <p style="font-size:14px"><b>这份计划里没有一个数字是拍脑袋的——每条规则背后都是一条被反复验证的原理。看完这些，你就能自己分辨任何健身建议的真假。</b></p>
+      <p style="font-size:14px"><b>💡 先讲三个反常识，90% 的人第一次听说：</b></p>
       <ol style="font-size:14px;padding-left:20px">
-        <li><b>目标方程</b>：体重 = 去脂体重 + 脂肪。先算终点（去脂体重 ÷（1 − 目标体脂）+ 增肌调整），再倒推要减多少脂肪。</li>
-        <li><b>能量算术</b>：1 lb 体脂 ≈ 3,500 kcal。减脂速度只由周累计缺口决定，不靠"干净饮食"玄学。</li>
-        <li><b>分档吃法</b>：训练日多 400–500 kcal 保训练质量、休息日少 400–500 kcal 烧脂肪——每天缺口相等，训练日不挨饿。</li>
-        <li><b>三杠杆锁肌肉</b>：蛋白（1.9–2.2 g/kg）+ 力量训练（每肌群 6–10 组/周）+ 慢缺口（≤0.7% 体重/周）与 7–9 h 睡眠。</li>
-        <li><b>秤 ≠ 脂肪</b>：秤测的是「脂肪 − 肌肉」的净差。腰围才是脂肪的纯代理，力量是肌肉的代理——三条线分开看。</li>
-        <li><b>薄肌视觉</b>：好看 = 倒三角（肩宽/背宽/胸上沿）× 低体脂。腹斜肌练厚 = 腰粗、斜方练大 = 显矮，所以不练。</li>
-        <li><b>剂量</b>：增肌要 10+ 组/肌群/周（Schoenfeld 2017）；薄肌只要 6–10 组的维持区，省下的恢复预算给爆发/耐力/柔韧。</li>
-        <li><b>校准闭环</b>：手表是模型、秤是真相。真实周 TDEE ≈ 周摄入 + 3,500 × 周均秤降——每 2 周反推一次。</li>
-        <li><b>达标后</b>：反向饮食（每周 +100–150 kcal）防反弹，比骤增热量更稳。</li>
-        <li><b>不练腿也可行</b>：下肢是可选项——形体目标优先时，日常快走/骑行维持基础功能即可。</li>
+        <li><b>秤会骗你。</b>腰围才是脂肪的真相、力量才是肌肉的真相，秤只是净差——只盯秤的人，一半时间在瞎调。</li>
+        <li><b>训练日反而要多吃。</b>每天缺口相等：训练日多 400–500 kcal 保训练质量，休息日少 400–500 kcal 烧脂肪。挨饿练出来的不是薄肌，是掉肌肉。</li>
+        <li><b>腹斜肌越练腰越粗，斜方肌越练越显矮。</b>好看的身材 = 练对部位 + 不练错部位。</li>
       </ol>
+      <p style="font-size:14px"><b>⚙️ 计划的骨架（四条硬原理）：</b></p>
+      <ol style="font-size:14px;padding-left:20px" start="4">
+        <li><b>目标方程</b>：先算终点——去脂体重 ÷（1 − 目标体脂）+ 增肌调整，再倒推要减多少脂肪。</li>
+        <li><b>能量算术</b>：1 lb 体脂 ≈ 3,500 kcal，减脂速度只由周累计缺口决定。</li>
+        <li><b>三杠杆锁肌肉</b>：蛋白 1.9–2.2 g/kg + 每肌群 6–10 组力量训练 + 慢缺口（≤0.7% 体重/周）与 7–9 h 睡眠。</li>
+        <li><b>剂量克制</b>：增肌要 10+ 组/周（Schoenfeld 2017），薄肌只要 6–10 组的维持区——省下的恢复预算给爆发、耐力、柔韧。</li>
+      </ol>
+      <p style="font-size:14px"><b>🔁 它和其他计划最大的不同：会自我修正。</b></p>
+      <ol style="font-size:14px;padding-left:20px" start="8">
+        <li><b>每 2 周校准一次自己</b>：用真实数据反推你的 TDEE（真实 TDEE ≈ 周摄入 + 3,500 × 周均秤降）。别的计划让你闷头照做，这份计划会自己纠偏。</li>
+        <li><b>达标后反向饮食</b>：每周 +100–150 kcal 缓慢回到维持，而不是骤然恢复——反弹是大多数计划的终点，这里是起点。</li>
+        <li><b>不练腿？可以。</b>下肢是可选模块，形体优先时用日常活动维持基础功能。</li>
+      </ol>
+      <p style="font-size:15px"><b>原理讲完了。你的数字是多少？30 秒生成，免费的。</b></p>
       <p style="font-size:12px;color:var(--sub)">参考文献：Helms 2014 (JISSN) · Morton 2018 (BJSM) · Schoenfeld 2017 (J Sports Sci) · Nedeltcheva 2010 (Ann Intern Med) · WHO 2020 · Afonso 2021 (Sports Med) · Barakat 2020 (SCJ)</p>
       <button class="btn-ghost" onclick="closeP()">关闭</button>
     </div>
   </div>
-  <footer>本工具输出为一般性健身建议，非医疗建议；有基础疾病请先咨询医生。<br>v0.3 原型 · 引擎移植自 lean-muscle-plan skill</footer>
+  <footer>本工具输出为一般性健身建议，非医疗建议；有基础疾病请先咨询医生。<br>v0.4 原型 · 引擎移植自 lean-muscle-plan skill</footer>
 </div>
 
 <script>
@@ -160,7 +194,7 @@ function generatePlan(inp){
   var sex = inp.sex;
   var bmr = sex==='男' ? 10*wKg + 6.25*inp.heightCm - 5*inp.age + 5
                        : 10*wKg + 6.25*inp.heightCm - 5*inp.age - 161;
-  var act = {'2':1.35,'3':1.45,'4':1.5,'5':1.6}[String(inp.daysPerWeek)] || 1.45;
+  var act = {'2':1.35,'3':1.45,'4':1.5,'5':1.6,'6':1.6}[String(inp.daysPerWeek)] || 1.45;
   var noLegs = inp.legs==='不练腿（专注上半身）';
   if(noLegs) act = act*0.95;
   var tdee = bmr*act;
@@ -175,7 +209,7 @@ function generatePlan(inp){
   var fatKg = wKg*bf/100;
   var leanKg = wKg-fatKg;
 
-  var muscleAdj = {'新手':1.5,'断练重启':1.8,'系统训练中':0.25}[inp.history] || 1.4;
+  var muscleAdj = {'新手':1.5,'进阶':1.0,'老手':0.25}[inp.history] || 1.0;
   var targetBf = inp.targetBf;
   var targetW = leanKg/(1-targetBf/100) + muscleAdj;
   var fatToLoseKg = fatKg - targetW*targetBf/100;
@@ -200,15 +234,15 @@ function generatePlan(inp){
   var carbsR = restIn ? Math.round((restIn-protein*4-fatG*9)/4) : 0;
   var carbsF = flatIntake ? Math.round((flatIntake-protein*4-fatG*9)/4) : 0;
 
-  var muscleRateLb = {'新手':0.5,'断练重启':0.45,'系统训练中':0.15}[inp.history] || 0.45;
+  var muscleRateLb = {'新手':0.5,'进阶':0.3,'老手':0.15}[inp.history] || 0.3;
   var netLow = fatRateLb - muscleRateLb;
   var netHigh = fatRateLb - muscleRateLb*0.5;
 
   var weeks = Math.max(6, Math.round(fatToLoseKg/(fatRateLb*LBKG)));
   var waistTarget = Math.round(inp.heightCm*(sex==='男'?0.47:0.42));
 
-  var splitsL = {'2':'全身×2（A/B 交替）','3':'PPL（推/拉/腿）','4':'上下肢×2','5':'PPL + 补强日'};
-  var splitsU = {'2':'推/拉（上肢版）','3':'推 / 拉 / 肩背补强','4':'推拉×2 交替','5':'推/拉 ×2 + 补强'};
+  var splitsL = {'2':'全身×2（A/B 交替）','3':'PPL（推/拉/腿）','4':'上下肢×2','5':'PPL + 补强日','6':'PPL ×2（六练一休）'};
+  var splitsU = {'2':'推/拉（上肢版）','3':'推 / 拉 / 肩背补强','4':'推拉×2 交替','5':'推/拉 ×2 + 补强','6':'推/拉 ×3 交替（六练一休）'};
   var splits = noLegs ? splitsU : splitsL;
   var progression = inp.history==='新手' ? '每周 +1 次或 +2.5 kg' : '每 1–2 周 +1 次或每 2 周 +2.5 kg（主项留 1–3 次余力）';
 
@@ -238,7 +272,15 @@ function weekSchedule(inp){
   var zo2 = zo ? (zo+' 30–45 min（talk test）') : '快走 8,000–12,000 步';
   var zo6 = zo ? (zo+' 40–45 min；隔周 + 冲刺 6–8×30s') : '快走 8,000–12,000 步';
   var rest = '完全休息 / 散步 / 活动度 10–15 min';
-  if(days===3){
+  if(days===6){
+    push('周一','训练','推日',pushT);
+    push('周二','训练','拉日',pullT);
+    push('周三','训练', noLegs?'肩背补强':'腿日', noLegs?compT:legT);
+    push('周四','训练','推日',pushT);
+    push('周五','训练','拉日',pullT);
+    push('周六','训练', noLegs?'肩背补强':'腿日', noLegs?compT:legT);
+    push('周日','休息','休息',rest);
+  } else if(days===3){
     push('周一','训练','推日',pushT);
     push('周二','有氧','Zone 2',zo2);
     push('周三','训练','拉日',pullT);
@@ -286,12 +328,12 @@ function readInput(){
   if(q('c4e').checked)qualities.push('耐力');
   if(q('c4f').checked)qualities.push('柔韧');
   return {
-    sex:val('a1'), age:num('a2'), heightCm:num('a3'),
+    sex:'男', age:num('a2'), heightCm:num('a3'),
     weight:num('a4'), weightUnit:val('a4u'),
     bf:num('a5'), waistCm:num('a6'),
-    targetBf:num('b1')||15, priority:val('b2'), timeline:val('b3'), history:val('b4'),
-    daysPerWeek:val('c1'), legs:val('c7'), equipment:val('c2'), sessionMin:val('c3'),
-    qualities:qualities, cardio:val('c5'), sport:val('c6'),
+    targetBf:num('b1')||15, priority:'减脂为主保肌（薄肌默认）', timeline:val('b3'), history:val('b4'),
+    daysPerWeek:val('c1'), legs:val('c7'), equipment:val('c2'), sessionMin:(function(){var s=num('c3')||60; return Math.min(90,Math.max(30,s));})(),
+    qualities:qualities, cardio:val('c5'), sport:'无',
     splitMode:val('d1'), tracking:val('d2'), proteinRestriction:val('d3'), eatOut:val('d4'), alcohol:val('d5'),
     injury:val('e1'), sleep:val('e2'), stress:val('e3'), wearable:val('e4'),
     trainTDEE:num('e4t')||null, restTDEE:num('e4r')||null
@@ -312,7 +354,10 @@ function progTemplate(inp){
   var t5 = noLegs
     ? '推/拉 ×2（内容同 4 天版），另加一天肩背补强：引体 + 侧平举 + 面拉 + 核心，各 2-3 组'
     : 'PPL 同 3 天版，另加一天补强日：引体 + 上斜推 + 面拉 + 核心，各 2-3 组，轻重量高控制';
-  return {'3':t3,'2':t2,'4':t4,'5':t5}[String(inp.daysPerWeek)]||t3;
+  var t6 = noLegs
+    ? '推/拉 ×3 交替：周一/周四 推日、周二/周五 拉日、周三/周六 肩背补强（内容同 3 天版，每周两轮）'
+    : 'PPL ×2：周一/周四 推日、周二/周五 拉日、周三/周六 腿日（内容同 3 天版，每周两轮）';
+  return {'3':t3,'2':t2,'4':t4,'5':t5,'6':t6}[String(inp.daysPerWeek)]||t3;
 }
 
 function buildMd(p,inp){
@@ -409,11 +454,13 @@ function run(){
 }
 function copyMd(){var t=byId('resMd');t.select();try{navigator.clipboard.writeText(t.value);alert('已复制');}catch(e){document.execCommand('copy');alert('已复制');}}
 function downloadMd(){var b=new Blob([byId('resMd').value],{type:'text/markdown;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='我的薄肌计划.md';a.click();}
-function fillDemo(){byId('a1').value='男';byId('a2').value=30;byId('a3').value=175;byId('a4').value=75;byId('a4u').value='kg';byId('a5').value=22;byId('a6').value=85;run();}
+function fillDemo(){byId('a2').value=30;byId('a3').value=175;byId('a4').value=75;byId('a4u').value='kg';byId('a5').value=22;byId('a6').value=85;run();}
 function resetForm(){location.reload();}
 byId('e4').addEventListener('change',function(){byId('watchRow').style.display=byId('e4').value==='无'?'none':'flex';});
 function openP(){byId('modal').style.display='block';}
 function closeP(){byId('modal').style.display='none';}
+function openW(){byId('modalW').style.display='block';}
+function closeW(){byId('modalW').style.display='none';}
 
 /*POSTER-START*/
 function posterSvg(p,inp){
