@@ -183,7 +183,14 @@ footer{font-size:12px;color:var(--sub);text-align:center;margin-top:26px}
       <button class="btn-ghost" onclick="closeP()">关闭</button>
     </div>
   </div>
-  <footer>本工具输出为一般性健身建议，非医疗建议；有基础疾病请先咨询医生。<br>v0.5 原型 · 引擎移植自 lean-muscle-plan skill</footer>
+  <div id="fbFloat" style="position:fixed;right:14px;bottom:14px;z-index:40">
+    <div id="fbMenu" style="display:none;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.15);padding:10px;margin-bottom:8px">
+      <button onclick="openWenjuan()" style="display:block;width:100%;background:#f2fbf7;border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:6px;font-size:14px;font-weight:600;cursor:pointer;text-align:left">📝 腾讯问卷<br><span style="font-size:11px;color:var(--sub);font-weight:400">免注册，微信直接填（推荐）</span></button>
+      <button onclick="openFeedback()" style="display:block;width:100%;background:#f1f5f3;border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:14px;font-weight:600;cursor:pointer;text-align:left">🐙 GitHub Issue<br><span style="font-size:11px;color:var(--sub);font-weight:400">适合技术用户，自动预填模板</span></button>
+    </div>
+    <button onclick="toggleFb()" style="background:#0b7d58;color:#fff;border:none;border-radius:999px;padding:12px 18px;font-size:14px;font-weight:700;box-shadow:0 4px 14px rgba(11,125,88,.4);cursor:pointer">💬 提反馈</button>
+  </div>
+  <footer>本工具输出为一般性健身建议，非医疗建议；有基础疾病请先咨询医生。<br>v0.6 原型 · 引擎移植自 lean-muscle-plan skill · <a href="javascript:openWenjuan()" style="color:var(--acc2)">📝 腾讯问卷</a> · <a href="javascript:openFeedback()" style="color:var(--acc2)">🐙 GitHub Issue</a></footer>
 </div>
 
 <script>
@@ -524,6 +531,26 @@ byId('d5').addEventListener('change',function(){
 });
 function openP(){byId('modal').style.display='block';}
 function closeP(){byId('modal').style.display='none';}
+function toggleFb(){ var m=byId('fbMenu'); m.style.display = m.style.display==='none' ? 'block' : 'none'; }
+function openWenjuan(){ window.open('https://wj.qq.com/s2/27711238/vclo/', '_blank'); }
+function openFeedback(){
+  var title = encodeURIComponent('用户反馈：');
+  var body = encodeURIComponent([
+    '## 反馈类型',
+    '- [ ] Bug 报告',
+    '- [ ] 功能建议',
+    '- [ ] 内容/文案问题',
+    '',
+    '## 描述',
+    '',
+    '',
+    '## 使用环境',
+    '- 设备：手机 / 电脑',
+    '- 浏览器：',
+    ''
+  ].join('\n'));
+  window.open('https://github.com/HusongZhou/lean-muscle-generator/issues/new?title=' + title + '&body=' + body, '_blank');
+}
 function openW(){byId('modalW').style.display='block';}
 function closeW(){byId('modalW').style.display='none';}
 
