@@ -7,3 +7,4 @@
 - 📱 移动端适配
 
 在线使用：https://husongzhou.github.io/lean-muscle-generator/
+更新日志见 [CHANGELOG.md](CHANGELOG.md)。
