@@ -36,6 +36,13 @@ button{font-size:15px;border:none;border-radius:12px;padding:12px 18px;cursor:po
 .quick .q span{font-size:12px;color:var(--sub)}
 #resMd{width:100%;min-height:420px;font-family:ui-monospace,Consolas,monospace;font-size:13px;border:1px solid var(--line);border-radius:10px;padding:12px;background:#fbfdfc}
 .note{font-size:12px;color:var(--sub);margin-top:8px}
+.wk-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;margin-bottom:6px;border:1px solid var(--line)}
+.wk-day{font-weight:700;min-width:44px}
+.wk-chip{font-size:11px;padding:2px 8px;border-radius:999px;background:#eef2f0;color:var(--sub);min-width:38px;text-align:center}
+.wk-tr .wk-chip{background:#e6f6ef;color:var(--acc2)}
+.wk-zo .wk-chip{background:#e8f1fb;color:#2b6cb0}
+.wk-rest .wk-chip{background:#f1f3f2;color:#8a9690}
+.wk-det{font-size:12px;color:var(--sub)}
 footer{font-size:12px;color:var(--sub);text-align:center;margin-top:26px}
 @media(max-width:560px){.grid{grid-template-columns:1fr}}
 @media print{body *{display:none}#result{display:block!important}#result *{display:revert}}
@@ -108,6 +115,7 @@ footer{font-size:12px;color:var(--sub);text-align:center;margin-top:26px}
 
   <div id="result">
     <div class="card"><h2>速查卡</h2><div class="quick" id="resCards"></div></div>
+    <div class="card"><h2>🗓️ 周训练计划示例</h2><div id="weekCard"></div></div>
     <div class="card"><h2>完整计划（Markdown）</h2>
       <a href="javascript:openP()" style="display:inline-block;margin-bottom:8px;font-size:13px;color:var(--acc2)">📐 这套数字背后的原理 →</a>
       <textarea id="resMd" readonly></textarea>
@@ -140,7 +148,7 @@ footer{font-size:12px;color:var(--sub);text-align:center;margin-top:26px}
       <button class="btn-ghost" onclick="closeP()">关闭</button>
     </div>
   </div>
-  <footer>本工具输出为一般性健身建议，非医疗建议；有基础疾病请先咨询医生。<br>v0.2 原型 · 引擎移植自 lean-muscle-plan skill</footer>
+  <footer>本工具输出为一般性健身建议，非医疗建议；有基础疾病请先咨询医生。<br>v0.3 原型 · 引擎移植自 lean-muscle-plan skill</footer>
 </div>
 
 <script>
@@ -212,6 +220,58 @@ function generatePlan(inp){
     scaleLow:netLow,scaleHigh:netHigh,weeks:weeks,waistTarget:waistTarget,
     splitName:splits[String(inp.daysPerWeek)]||splits['3'],progression:progression,
     targetBf:targetBf,bf:bf};
+}
+function weekSchedule(inp){
+  var noLegs = inp.legs==='不练腿（专注上半身）';
+  var days = Number(inp.daysPerWeek);
+  var power = inp.qualities.indexOf('爆发')>=0;
+  var zo = inp.cardio.indexOf('不做')>=0 ? null : inp.cardio;
+  var rows=[];
+  function push(name,type,title,detail){rows.push({name:name,type:type,title:title,detail:detail});}
+  var pd = power ? '爆发 3×5 → ' : '';
+  var pushT = pd+'上斜卧推 3×6-10 → 推举 3×6-10 → 侧平举 3×12-15 → 面拉 3×12-15';
+  var pullT = pd+'引体 3×5-8 → 划船 3×6-10 → 反向飞鸟 3×12-15 → 核心 2-3 组';
+  var legT  = pd+'深蹲 3×5-8 → RDL 3×6-10 → 分腿蹲 2×10-12 → 农夫行走 3×40m';
+  var compT = '引体 3×6-8 → 上斜推 3×8-10 → 侧平举 3×12-15 → 面拉 3×12-15 → 核心 2-3 组';
+  var fullA = pd+'深蹲 3×6-8 → 卧推 3×6-10 → 划船 3×6-10 → 平板 3×30-45s';
+  var fullB = pd+'RDL 3×6-8 → 推举 3×6-10 → 引体 3×6-8 → 悬垂举腿 2-3×8-12';
+  var zo2 = zo ? (zo+' 30–45 min（talk test）') : '快走 8,000–12,000 步';
+  var zo6 = zo ? (zo+' 40–45 min；隔周 + 冲刺 6–8×30s') : '快走 8,000–12,000 步';
+  var rest = '完全休息 / 散步 / 活动度 10–15 min';
+  if(days===3){
+    push('周一','训练','推日',pushT);
+    push('周二','有氧','Zone 2',zo2);
+    push('周三','训练','拉日',pullT);
+    push('周四','休息','休息',rest);
+    push('周五','训练', noLegs?'肩背补强':'腿日', noLegs?compT:legT);
+    push('周六','有氧','Zone 2',zo6);
+    push('周日','休息','休息',rest);
+  } else if(days===2){
+    push('周一','训练','A 日', noLegs?('上斜卧推 3×6-10 → 推举 3×6-10 → 侧平举 2×12-15 → 面拉 2×12-15'):fullA);
+    push('周二','有氧','Zone 2',zo2);
+    push('周三','休息','休息',rest);
+    push('周四','训练','B 日', noLegs?('引体 3×6-8 → 划船 3×8-10 → 反向飞鸟 2×12-15 → 核心 2-3 组'):fullB);
+    push('周五','休息','休息',rest);
+    push('周六','有氧','Zone 2',zo6);
+    push('周日','休息','休息',rest);
+  } else if(days===4){
+    push('周一','训练','推日',pushT);
+    push('周二','训练','拉日',pullT);
+    push('周三','有氧','Zone 2',zo2);
+    push('周四','训练','推日',pushT);
+    push('周五','训练','拉日',pullT);
+    push('周六','有氧','Zone 2',zo6);
+    push('周日','休息','休息',rest);
+  } else {
+    push('周一','训练','推日',pushT);
+    push('周二','训练','拉日',pullT);
+    push('周三','训练','推日',pushT);
+    push('周四','训练','拉日',pullT);
+    push('周五','训练','补强日',compT);
+    push('周六','有氧','Zone 2',zo6);
+    push('周日','休息','休息',rest);
+  }
+  return rows;
 }
 /*ENGINE-END*/
 
@@ -302,6 +362,9 @@ function buildMd(p,inp){
   L.push(progTemplate(inp));
   L.push('- 器械：'+inp.equipment+'；每次 '+inp.sessionMin+' min');
   if(inp.legs==='不练腿（专注上半身）')L.push('- 下肢：不安排专项腿部训练；以日常快走/骑行/爬楼维持基础下肢功能（形体优先）');
+  L.push('');
+  L.push('### 本周示例（7 天）');
+  weekSchedule(inp).forEach(function(d2){ L.push('- '+d2.name+' · '+d2.type+'：'+d2.title+'——'+d2.detail); });
   if(inp.injury!=='无')L.push('- 伤病替代：'+inp.injury+' 相关动作按无痛变体执行，痛就停');
   L.push('');
   L.push('## 6 监测与里程碑');
@@ -338,6 +401,8 @@ function run(){
     ['训练',p.splitName]
   ];
   byId('resCards').innerHTML=cards.map(function(c){return '<div class="q"><b>'+c[1]+'</b><span>'+c[0]+'</span></div>';}).join('');
+  var wk=weekSchedule(inp);
+  byId('weekCard').innerHTML=wk.map(function(d3){var cls=d3.type==='训练'?'wk-tr':(d3.type==='有氧'?'wk-zo':'wk-rest');return '<div class="wk-row '+cls+'"><span class="wk-day">'+d3.name+'</span><span class="wk-chip">'+d3.type+'</span><b>'+d3.title+'</b><span class="wk-det">'+d3.detail+'</span></div>';}).join('');
   byId('resMd').value=buildMd(p,inp);
   byId('result').style.display='block';
   byId('result').scrollIntoView({behavior:'smooth'});
