@@ -91,7 +91,7 @@ footer{font-size:12px;color:var(--sub);text-align:center;margin-top:26px}
     <div class="field"><label>记录精度</label><select id="d2"><option>精确称重</option><option selected>粗略估算</option><option>只跟模板不记录</option></select></div>
     <div class="field"><label>蛋白来源</label><select id="d3"><option selected>无限制</option><option>不吃红肉</option><option>乳制品不耐</option><option>素食</option></select></div>
     <div class="field"><label>外食频率</label><select id="d4"><option selected>≤2次/周</option><option>3-5次/周</option><option>几乎天天</option></select></div>
-    <div class="field"><label>饮酒</label><select id="d5"><option>无</option><option selected>偶尔</option><option>经常</option></select></div>
+    <div class="field"><label>饮酒</label><select id="d5"><option selected>无</option><option>偶尔</option><option>经常</option></select></div>
   </div></div>
 
   <div class="card"><h2>E · 软问题 <span class="tag">可跳过</span></h2><div class="grid">
@@ -114,6 +114,7 @@ footer{font-size:12px;color:var(--sub);text-align:center;margin-top:26px}
   <div id="result">
     <div class="card"><h2>速查卡</h2><div class="quick" id="resCards"></div></div>
     <div class="card"><h2>🗓️ 周训练计划示例</h2><div id="weekCard"></div></div>
+    <div class="card"><h2>🍽️ 示例菜谱</h2><div id="mealCard"></div></div>
     <div class="card"><h2>完整计划（Markdown）</h2>
       <a href="javascript:openP()" style="display:inline-block;margin-bottom:8px;font-size:13px;color:var(--acc2)">📐 薄肌的第一性原理 →</a>
       <textarea id="resMd" readonly></textarea>
@@ -182,11 +183,12 @@ footer{font-size:12px;color:var(--sub);text-align:center;margin-top:26px}
       <button class="btn-ghost" onclick="closeP()">关闭</button>
     </div>
   </div>
-  <footer>本工具输出为一般性健身建议，非医疗建议；有基础疾病请先咨询医生。<br>v0.4 原型 · 引擎移植自 lean-muscle-plan skill</footer>
+  <footer>本工具输出为一般性健身建议，非医疗建议；有基础疾病请先咨询医生。<br>v0.5 原型 · 引擎移植自 lean-muscle-plan skill</footer>
 </div>
 
 <script>
 /*ENGINE-START*/
+function isSplitMode(inp){ return inp.splitMode!=='平摊' && inp.splitMode!=='每天平摊'; }
 function generatePlan(inp){
   var LBKG=0.45359237;
   var wKg = inp.weightUnit==='lb' ? inp.weight*LBKG : inp.weight;
@@ -224,9 +226,9 @@ function generatePlan(inp){
 
   function roundN(x,dir,n){ var b=Math.round(x/n)*n; if(dir==='up'&&b<x)b+=n; if(dir==='down'&&b>x)b-=n; return b; }
   var trainIn=0, restIn=0, flatIntake=0;
-  if(inp.splitMode==='分档'){ trainIn=roundN(trainTDEE-d,'up',100); restIn=roundN(restTDEE-d,'down',100); }
+  if(isSplitMode(inp)){ trainIn=roundN(trainTDEE-d,'up',100); restIn=roundN(restTDEE-d,'down',100); }
   else { flatIntake=roundN((weeklyTDEE-weeklyDeficit)/7,'down',100); }
-  var weeklyIntake = inp.splitMode==='分档' ? (cDays*trainIn+(7-cDays)*restIn) : flatIntake*7;
+  var weeklyIntake = isSplitMode(inp) ? (cDays*trainIn+(7-cDays)*restIn) : flatIntake*7;
 
   var protein = Math.round(wKg*2.0/5)*5;
   var fatG = Math.round(wKg*0.8/5)*5;
@@ -315,6 +317,41 @@ function weekSchedule(inp){
   }
   return rows;
 }
+function mealPlan(p, inp){
+  var f = {
+    '无限制':     {b:'希腊酸奶 200 g + 鸡蛋 2 个', bp:33, l:'鸡胸肉', lp:45, lg:150, s:'乳清蛋白 1 勺', sp:24, d:'鱼 / 瘦牛肉', dp:33, dg:150},
+    '不吃红肉':   {b:'希腊酸奶 200 g + 鸡蛋 2 个', bp:33, l:'鸡胸肉', lp:45, lg:150, s:'乳清蛋白 1 勺', sp:24, d:'三文鱼 / 虾仁', dp:30, dg:150},
+    '乳制品不耐': {b:'无糖豆浆 300 ml + 鸡蛋 3 个', bp:29, l:'鸡胸肉', lp:45, lg:150, s:'植物蛋白粉 1 勺', sp:20, d:'三文鱼 / 虾仁', dp:30, dg:150},
+    '素食':       {b:'无糖豆浆 300 ml + 豆腐 100 g', bp:17, l:'豆腐', lp:16, lg:200, s:'植物蛋白粉 1 勺', sp:20, d:'天贝 / 鹰嘴豆', dp:31, dg:200}
+  }[inp.proteinRestriction] || {b:'希腊酸奶 200 g + 鸡蛋 2 个', bp:33, l:'鸡胸肉', lp:45, lg:150, s:'乳清蛋白 1 勺', sp:24, d:'鱼 / 瘦牛肉', dp:33, dg:150};
+  var P = p.protein;
+  var k = P / (f.bp + f.lp + f.sp + f.dp);
+  var meatL = Math.round(f.lg * k / 10) * 10;
+  var meatD = Math.round(f.dg * k / 10) * 10;
+  var scoopTxt = (Math.abs(k - 1) < 0.1) ? '' : (' ×' + k.toFixed(1));
+  function round10(x){ return Math.round(x / 10) * 10; }
+  function restLines(intake){
+    var carbs = Math.max(80, Math.round((intake - P * 4 - 45 * 9) / 4));
+    var oat = round10(carbs * 0.22);
+    var riceL = round10(carbs * 0.30);
+    var riceD = round10(carbs * 0.25);
+    var fruit = round10(carbs * 0.13);
+    return [
+      '早餐：燕麦 ' + oat + ' g + ' + f.b + ' + 蓝莓',
+      '午餐：米饭 ' + riceL + ' g + ' + f.l + ' ' + meatL + ' g + 时蔬',
+      '加餐：' + f.s + scoopTxt + ' + 水果 ' + fruit + ' g',
+      '晚餐：米饭 ' + riceD + ' g + ' + f.d + ' ' + meatD + ' g + 蔬菜',
+      '（合计 ≈' + intake + ' kcal / 蛋白 ≈' + P + ' g，分量可微调）'
+    ];
+  }
+  if(isSplitMode(inp)){
+    var r = restLines(p.restIn);
+    var t = restLines(p.trainIn);
+    t.splice(4, 0, '练前：香蕉 1 根');
+    return {rest: r, train: t, flat: false};
+  }
+  return {rest: restLines(p.flatIntake), train: null, flat: true};
+}
 /*ENGINE-END*/
 
 function byId(id){return document.getElementById(id);}
@@ -334,7 +371,7 @@ function readInput(){
     targetBf:num('b1')||15, priority:'减脂为主保肌（薄肌默认）', timeline:val('b3'), history:val('b4'),
     daysPerWeek:val('c1'), legs:val('c7'), equipment:val('c2'), sessionMin:(function(){var s=num('c3')||60; return Math.min(90,Math.max(30,s));})(),
     qualities:qualities, cardio:val('c5'), sport:'无',
-    splitMode:val('d1'), tracking:val('d2'), proteinRestriction:val('d3'), eatOut:val('d4'), alcohol:val('d5'),
+    splitMode:(val('d1')==='每天平摊'?'平摊':'分档'), tracking:val('d2'), proteinRestriction:val('d3'), eatOut:val('d4'), alcohol:val('d5'),
     injury:val('e1'), sleep:val('e2'), stress:val('e3'), wearable:val('e4'),
     trainTDEE:num('e4t')||null, restTDEE:num('e4r')||null
   };
@@ -390,6 +427,16 @@ function buildMd(p,inp){
   else { L.push('- 平摊：每日 '+p.flatIntake+' kcal；每 2 周按秤速校准一次'); }
   L.push('- 真实周 TDEE ≈ 周摄入 + 3,500 × 周均秤降(lb)，每 2 周反推一次');
   L.push('');
+  L.push('### 示例菜谱');
+  var mp = mealPlan(p, inp);
+  L.push('**' + (mp.flat ? '每天' : '休息日') + ' ≈' + (mp.flat ? p.flatIntake : p.restIn) + ' kcal**');
+  mp.rest.forEach(function(x){ L.push('- ' + x); });
+  if(mp.train){
+    L.push('');
+    L.push('**训练日 ≈' + p.trainIn + ' kcal**（休息日基础上加练前练后两餐）');
+    mp.train.forEach(function(x){ L.push('- ' + x); });
+  }
+  L.push('');
   L.push('## 3 三杠杆');
   L.push('1. 蛋白质：'+p.protein+' g/天（≈2 g/kg），分 3–4 餐 × 25–40 g');
   L.push('2. 力量训练：每肌群 6–10 组/周，复合动作为主；力量不降 ≈ 肌肉没掉');
@@ -420,7 +467,7 @@ function buildMd(p,inp){
   L.push('## 7 风险避坑');
   L.push('- 总原则：保蛋白 → 保力量训练 → 缺口可随时放弃，第二天继续');
   L.push('- 外食 '+inp.eatOut+'：'+(inp.eatOut.indexOf('≤2')>=0?'影响可控':'缺口预留要更保守，选烤/蒸+定量主食'));
-  L.push('- 饮酒 '+inp.alcohol+'：'+(inp.alcohol==='经常'?'建议减脂期基本戒断':'偶尔可无糖气泡水替代'));
+  L.push('- 饮酒 '+inp.alcohol+'：'+(inp.alcohol==='无'?'无，很好':'酒精 = 空热量 + 拆肌肉 + 毁睡眠，想练成薄肌就戒了'));
   if(inp.stress==='偏高')L.push('- 压力偏高：缺口已取保守档，恢复优先');
   L.push('');
   L.push('## 8 启动清单');
@@ -448,6 +495,18 @@ function run(){
   byId('resCards').innerHTML=cards.map(function(c){return '<div class="q"><b>'+c[1]+'</b><span>'+c[0]+'</span></div>';}).join('');
   var wk=weekSchedule(inp);
   byId('weekCard').innerHTML=wk.map(function(d3){var cls=d3.type==='训练'?'wk-tr':(d3.type==='有氧'?'wk-zo':'wk-rest');return '<div class="wk-row '+cls+'"><span class="wk-day">'+d3.name+'</span><span class="wk-chip">'+d3.type+'</span><b>'+d3.title+'</b><span class="wk-det">'+d3.detail+'</span></div>';}).join('');
+  var mp=mealPlan(p,inp);
+  var ml=[];
+  if(mp.flat){
+    ml.push('<b>每天 ≈'+p.flatIntake+' kcal</b>');
+    mp.rest.forEach(function(x){ml.push('<div class="wk-det">'+x+'</div>');});
+  } else {
+    ml.push('<b>休息日 ≈'+p.restIn+' kcal</b>');
+    mp.rest.forEach(function(x){ml.push('<div class="wk-det">'+x+'</div>');});
+    ml.push('<b>训练日 ≈'+p.trainIn+' kcal</b>（休息日基础上加练前练后两餐）');
+    mp.train.forEach(function(x){ml.push('<div class="wk-det">'+x+'</div>');});
+  }
+  byId('mealCard').innerHTML=ml.join('');
   byId('resMd').value=buildMd(p,inp);
   byId('result').style.display='block';
   byId('result').scrollIntoView({behavior:'smooth'});
@@ -457,6 +516,12 @@ function downloadMd(){var b=new Blob([byId('resMd').value],{type:'text/markdown;
 function fillDemo(){byId('a2').value=30;byId('a3').value=175;byId('a4').value=75;byId('a4u').value='kg';byId('a5').value=22;byId('a6').value=85;run();}
 function resetForm(){location.reload();}
 byId('e4').addEventListener('change',function(){byId('watchRow').style.display=byId('e4').value==='无'?'none':'flex';});
+byId('d5').addEventListener('change',function(){
+  if(byId('d5').value!=='无'){
+    alert('🍺 还喝酒？薄肌警告！\n\n一杯啤酒 ≈ 150 kcal，一口喝掉今天的缺口；酒精还按住你的睾酮、拆你的肌肉合成、毁你的睡眠——练了也白练。\n\n想要「薄肌」，先把酒放下。\n要么喝酒，要么薄肌，二选一。');
+    byId('d5').value='无';
+  }
+});
 function openP(){byId('modal').style.display='block';}
 function closeP(){byId('modal').style.display='none';}
 function openW(){byId('modalW').style.display='block';}
